@@ -1,8 +1,34 @@
-# Orthrus
+<div align=center><h1>Orthrus</h1></div>
 
-![image](https://user-images.githubusercontent.com/66859419/209444424-c8fa073f-6800-4727-9e81-556ebfaeda66.png)
-![image](https://user-images.githubusercontent.com/66859419/209444430-8b00dcbc-27f8-4a17-b1ab-abcb0b34c62e.png)
+<div align=center>
+<img src=https://user-images.githubusercontent.com/66859419/209444424-c8fa073f-6800-4727-9e81-556ebfaeda66.png />
+<img src=https://user-images.githubusercontent.com/66859419/209444430-8b00dcbc-27f8-4a17-b1ab-abcb0b34c62e.png />
+</div>
 
+<div align=center>
+这是一款神奇的工具
+能帮助你玩HITMAN™3更顺畅
+
+解锁所有的物品
+让你的游戏更加丰富
+物品数量也*100倍增
+让你的背包更宽敞
+
+解锁所有的西装
+让你的人物更加时尚
+解除计划限制
+让你的游戏更加灵活
+
+解锁所有的入口
+让你的游戏更加开放
+这款工具就是这样
+让你的游戏更加精彩
+
+使用它吧
+让你的游戏更加愉快
+尽情享受吧
+HITMAN™3的乐趣
+</div>
 
 ![TS@JCHY S3$UPCTR)_I(B67](https://user-images.githubusercontent.com/66859419/209442906-b5d51286-551f-4cc4-84c0-58159cbf8a60.png)
 
