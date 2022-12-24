@@ -1,0 +1,61 @@
+{
+	"Item": {
+		"InstanceId": "f3a1d3a4-3cd5-49ba-9b97-e5e378d85bea",
+		"ProfileId": "fe76faee-ecdc-4dd7-a6d5-c5b84054a87c",
+		"Unlockable": {
+			"Properties": {
+				"Gameplay": {
+					"range": 0.5,
+					"damage": 0.6,
+					"clipsize": 0.2,
+					"rateoffire": 0.6
+				},
+				"Quality": 4,
+				"Rarity": "common",
+				"LoadoutSlot": "concealedweapon",
+				"RepositoryId": "482eca87-2340-43b2-bf8e-9f6dafb16b4c",
+				"UnlockOrder": 2
+			},
+			"Rarity": "common",
+			"DisplayNameLocKey": "UI_FIREARMS_PISTOL_ICA_STEALTH_DTI_NAME",
+			"Id": "FIREARMS_PISTOL_ICA_STEALTH_DTI",
+			"Type": "weapon",
+			"Subtype": "pistol",
+			"GameAsset": null,
+			"ImageId": "",
+			"RMTPrice": 99,
+			"GamePrice": 99,
+			"IsPurchasable": false,
+			"IsPublished": true,
+			"IsDroppable": false,
+			"Capabilities": [],
+			"Qualities": {},
+			"Guid": "4515d566-1c64-4bef-8bd3-9bb52dcef393"
+		},
+		"Properties": {}
+	},
+	"ItemDetails": {
+		"Capabilities": [],
+		"StatList": [
+			{
+				"Name": "range",
+				"Ratio": 0.5
+			},
+			{
+				"Name": "damage",
+				"Ratio": 0.6
+			},
+			{
+				"Name": "clipsize",
+				"Ratio": 0.2
+			},
+			{
+				"Name": "rateoffire",
+				"Ratio": 0.6
+			}
+		],
+		"PropertyTexts": []
+	},
+	"SlotId": "2",
+	"SlotName": null
+}
