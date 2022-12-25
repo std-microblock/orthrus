@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Resources;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Linq;
 
 namespace HitmanPatcher
@@ -35,7 +37,7 @@ namespace HitmanPatcher
             return str;
         }
 
-        void ProcessRequest(HttpListenerRequest request, HttpListenerResponse response)
+        async Task ProcessRequestAsync(HttpListenerRequest request, HttpListenerResponse response)
         {
             var builder = new UriBuilder(request.Url);
             switch (request.Url.Port)
@@ -249,6 +251,66 @@ namespace HitmanPatcher
                         obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(itemsData);
                     }
 
+                    if (request.Url.Query.Contains("disguise") && applyFuncOrNot("items.add-map-disguises"))
+                    {
+                        var itemsData = new List<JToken>();
+                        JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
+
+                        // Create an HttpClient instance
+                        var client = new HttpClient();
+
+                        // Get the query string of the request URL
+                        var queryString = request.Url.Query;
+
+                        // Parse the query string into a NameValueCollection
+                        var queryParams = HttpUtility.ParseQueryString(queryString);
+
+                        // Get the value of the contractId parameter
+                        var contractId = queryParams["contractId"];
+
+                        // Set the auth header in the request
+                        client.DefaultRequestHeaders.Add("authorization", request.Headers["authorization"]);
+
+                        var jsonBody = JsonConvert.SerializeObject(new
+                        {
+                            contractId = contractId,
+                            difficultyLevel = 2.000000
+                        });
+
+                        // Set the content type to application/json
+                        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                        // Make the POST request
+                        var responseR = await client.PostAsync("https://hm3-service.hitman.io/authentication/api/userchannel/ChallengesService/GetActiveChallengesAndProgression", content);
+
+                        // Get the response as a string
+                        var responseObject = JsonConvert.DeserializeObject<List<JObject>>(await responseR.Content.ReadAsStringAsync());
+
+                        // Find the JObjects that have an "EligibleDisguises" property
+                        var eligibleDisguisesObjects = responseObject.Where(jo => ((JObject)jo["Challenge"]?["Definition"]?["Constants"])?.ContainsKey("EligibleDisguises") == true);
+
+                        // Extract the "EligibleDisguises" property from each JObject
+                        var eligibleDisguises = eligibleDisguisesObjects.Select(jo => jo["Challenge"]["Definition"]["Constants"]["EligibleDisguises"]);
+
+                        // Convert the "EligibleDisguises" JArrays to lists of strings
+                        var eligibleDisguisesList = eligibleDisguises.First().ToObject<List<string>>();
+
+                        foreach (var disguise in eligibleDisguisesList)
+                        {
+                            JToken checkout = template.DeepClone();
+                            checkout["Item"]["InstanceId"] = Guid.NewGuid();
+                            checkout["Item"]["ProfileId"] = Guid.NewGuid();
+                            checkout["Item"]["Unlockable"]["Properties"]["RepositoryId"] = disguise;
+                            checkout["Item"]["Unlockable"]["Id"] = Guid.NewGuid();
+                            checkout["Item"]["Unlockable"]["Guid"] = Guid.NewGuid();
+                            checkout["Item"]["Unlockable"]["Type"] = "Map Disguises";
+                            checkout["Item"]["Unlockable"]["Subtype"] = "Map Disguises";
+                            checkout["SlotId"] = obj["data"]["SlotId"];
+
+                            obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(obj["data"]["LoadoutItemsData"]["Items"].Prepend(checkout));
+                        }
+                    }
+
                     string modifiedJson = JsonConvert.SerializeObject(obj);
                     responseBody = Encoding.UTF8.GetBytes(modifiedJson);
                 }
@@ -327,6 +389,52 @@ namespace HitmanPatcher
                     responseBody = Encoding.UTF8.GetBytes(modifiedJson);
                 }
 
+                if (request.Url.PathAndQuery.StartsWith("/profiles/page/SelectAgencyPickup"))
+                {
+                    string responseBodyString = Encoding.UTF8.GetString(responseBody);
+                    JObject obj = JsonConvert.DeserializeObject<JObject>(responseBodyString);
+
+                    if (applyFuncOrNot("agency-pickups.unlock-all"))
+                    {
+                        foreach (var entrance in obj["data"]["OrderedUnlocks"])
+                        {
+                            obj["data"]["Unlocked"] = JToken.FromObject(obj["data"]["Unlocked"].Prepend(entrance["Properties"]["RepositoryId"]));
+                            JObject entranceProperties = (JObject)entrance["Properties"];
+
+                            if (!entranceProperties.ContainsKey("UnlockOrder"))
+                            {
+                                entranceProperties.Add("UnlockOrder", 0);
+                            }
+                            else
+                            {
+                                entranceProperties["UnlockOrder"] = 1;
+                            }
+
+                            if (!entranceProperties.ContainsKey("UnlockLevel"))
+                            {
+                                entranceProperties.Add("UnlockLevel", "-1");
+                            }
+                            else
+                            {
+                                entranceProperties["UnlockLevel"] = "-1";
+                            }
+
+                            if (!entranceProperties.ContainsKey("UnlockedByDefault"))
+                            {
+                                entranceProperties.Add("UnlockedByDefault", true);
+                            }
+                            else
+                            {
+                                entranceProperties["UnlockedByDefault"] = true;
+                            }
+                        }
+                    }
+
+                    string modifiedJson = JsonConvert.SerializeObject(obj);
+                    responseBody = Encoding.UTF8.GetBytes(modifiedJson);
+                }
+
+
                 if (request.Url.PathAndQuery.StartsWith("/profiles/page/Planning"))
                 {
                     string responseBodyString = Encoding.UTF8.GetString(responseBody);
@@ -397,7 +505,7 @@ namespace HitmanPatcher
                     {
                         try
                         {
-                            ProcessRequest(request, response);
+                            ProcessRequestAsync(request, response);
                         }
                         catch (Exception e)
                         {

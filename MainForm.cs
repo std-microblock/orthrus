@@ -24,6 +24,8 @@ namespace HitmanPatcher
             {"[物品] 解锁所有西装","items.add-unlockables-disguise" },
             {"[入口] 解锁所有入口","entrance.unlock-all" },
             {"[计划] 解除计划限制（西装等）","planning.remove-limits" },
+            {"[计划] 解锁全部物品藏匿点","agency-pickups.unlock-all" },
+            {"[物品] 添加地图内的伪装到西装", "items.add-map-disguises"}
         };
 
         public static readonly Dictionary<string, bool> functionEnabled = new Dictionary<string, bool>
@@ -35,6 +37,8 @@ namespace HitmanPatcher
             {"items.add-unlockables-disguise", true},
             {"entrance.unlock-all", true},
             {"planning.remove-limits", true},
+            {"agency-pickups.unlock-all",true },
+            {"items.add-map-disguises",true }
         };
 
         private static readonly Dictionary<string, string> publicServers = new Dictionary<string, string>
@@ -252,8 +256,12 @@ namespace HitmanPatcher
 
         private void checkedFunctions_SelectedValueChanged(object sender, EventArgs e)
         {
-            functionEnabled[functions[(string)checkedFunctions.Items[checkedFunctions.SelectedIndex]]] =
+            try
+            {
+                functionEnabled[functions[(string)checkedFunctions.Items[checkedFunctions.SelectedIndex]]] =
                 checkedFunctions.GetItemChecked(checkedFunctions.SelectedIndex);
+            }
+            catch (Exception ex) { }
         }
     }
 }
