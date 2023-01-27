@@ -100,13 +100,86 @@ namespace HitmanPatcher
                 return false;
             };
 
+            var reqStream = request.InputStream;
+            var replacedBody = "";
+
+            if (request.Url.PathAndQuery.StartsWith("/authentication/api/userchannel/EventsService/SaveAndSynchronizeEvents4") || request.Url.PathAndQuery.StartsWith("/authentication/api/userchannel/EventsService/SaveEvents2"))
+            {
+                using (StreamReader reader = new StreamReader(request.InputStream))
+                {
+                    string inputString = reader.ReadToEnd();
+                    JObject obj = JsonConvert.DeserializeObject<JObject>(inputString);
+
+                    var input = JObject.Parse(inputString);
+
+                    var values = input["values"];
+
+                    foreach (var value in values)
+                    {
+                        var name = value["Name"].Value<string>();
+                        System.Console.WriteLine(name);
+                        if (name.Contains("Failed") && applyFuncOrNot("gameplay.no-fail-punishment"))
+                        {
+                            value["Name"] = "abc";
+                        }
+
+                        if (name=="CpdSet")
+                        {
+                            foreach (var property in ((JObject)value["Value"]).Properties())
+                            {
+                                if (property.Name.EndsWith("_MissionFailed"))
+                                {
+                                    if((bool?)value["Value"][property.Name]==true && applyFuncOrNot("gameplay.no-fail-punishment"))
+                                    {
+                                        value["Value"][property.Name] = false;
+                                        value["Value"]["CPD_CampaignStep"] = (int)value["Value"]["CPD_CampaignStep"] - 1;
+                                    }
+
+                                    break;
+                                }
+                            }
+
+                           
+                        }
+                    }
+
+                    var outputString = JsonConvert.SerializeObject(input);
+
+                    /*byte[] responseBody = Encoding.UTF8.GetBytes("");
+
+                    using (Stream responseStream = response.OutputStream)
+                    {
+                        responseStream.Write(responseBody, 0, responseBody.Length);
+                    }
+
+                    response.Close();*/
+                    replacedBody = outputString;
+                     byte[] byteArray = Encoding.UTF8.GetBytes(outputString);
+                    MemoryStream outputStream = new MemoryStream(byteArray);                    
+                }
+            }
+
             if (request.HasEntityBody)
             {
-                using (Stream requestBodyStream = request.InputStream)
-                using (Stream destinationRequestStream = destinationRequest.GetRequestStream())
+                if (replacedBody.Length!=0)
                 {
-                    requestBodyStream.CopyTo(destinationRequestStream);
+                    byte[] byte1 = Encoding.UTF8.GetBytes(replacedBody);
+
+                    destinationRequest.ContentType = "application/json";
+                    destinationRequest.ContentLength = byte1.Length;
+                    Stream stream = destinationRequest.GetRequestStream();
+                    stream.Write(byte1, 0, byte1.Length);
+                    stream.Close();
                 }
+                else
+                {
+                    using (Stream requestBodyStream = reqStream)
+                    using (Stream destinationRequestStream = destinationRequest.GetRequestStream())
+                    {
+                        requestBodyStream.CopyTo(destinationRequestStream);
+                    }
+                }
+                
             }
 
             try
@@ -151,7 +224,7 @@ namespace HitmanPatcher
                 }
 
 
-                if (request.Url.PathAndQuery.StartsWith("/profiles/page/Stashpoint"))
+                    if (request.Url.PathAndQuery.StartsWith("/profiles/page/Stashpoint"))
                 {
                     string responseBodyString = Encoding.UTF8.GetString(responseBody);
                     JObject obj = JsonConvert.DeserializeObject<JObject>(responseBodyString);
