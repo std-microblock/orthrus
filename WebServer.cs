@@ -592,20 +592,13 @@ namespace HitmanPatcher
 
                     if (applyFuncOrNot("planning.remove-limits"))
                     {
-                        string pattern = @"""Equip"":\s*\["".*?""\]";
-                        string replacement = @"""Equip"": []";
-                        string pattern1 = @"""GearSlotsEnabledCount"":\s*\d+";
-                        string replacement1 = @"""GearSlotsEnabledCount"": 99";
-                        string pattern2 = @"""GearSlotsAllowContainers"":\s*false";
-                        string replacement2 = @"""GearSlotsAllowContainers"": true";
-                        string pattern3 = @"""ConcealedWeaponSlotEnabled"":\s*false";
-                        string replacement3 = @"""ConcealedWeaponSlotEnabled"": true";
-
                         // 依次执行替换
-                        modifiedJson = Regex.Replace(modifiedJson, pattern1, replacement1);
-                        modifiedJson = Regex.Replace(modifiedJson, pattern2, replacement2);
-                        modifiedJson = Regex.Replace(modifiedJson, pattern3, replacement3);
-                        modifiedJson = Regex.Replace(modifiedJson, pattern, replacement);
+                        modifiedJson = Regex.Replace(modifiedJson, @"""GearSlotsEnabledCount"":\s*\d+", @"""GearSlotsEnabledCount"": 99");
+                        modifiedJson = Regex.Replace(modifiedJson, @"""GearSlotsAllowContainers"":\s*false", @"""GearSlotsAllowContainers"": true");
+                        modifiedJson = Regex.Replace(modifiedJson, @"""ConcealedWeaponSlotEnabled"":\s*false", @"""ConcealedWeaponSlotEnabled"": true");
+                        modifiedJson = Regex.Replace(modifiedJson, @"""Equip"":\s*\["".*?""\]", @"""Equip"": []");
+                        modifiedJson = Regex.Replace(modifiedJson, @"""EnableSaving"":false", @"""EnableSaving"":true");
+                        modifiedJson = Regex.Replace(modifiedJson, @"MandatoryLoadout", "_");
                     }
 
                     responseBody = Encoding.UTF8.GetBytes(modifiedJson);
