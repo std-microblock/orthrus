@@ -413,6 +413,7 @@
     <Content Include="patcher.ico" />
     <None Include="Resources\allunlockables.json" />
     <None Include="Resources\extra_unlockables1.json" />
+    <None Include="Resources\extra_unlockables_ids2.json" />
     <None Include="Resources\loadoutUnlockableTemplate.json" />
     <None Include="Resources\test.json" />
   </ItemGroup>

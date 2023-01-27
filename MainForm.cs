@@ -262,10 +262,18 @@ namespace HitmanPatcher
         {
             try
             {
-                functionEnabled[functions[(string)checkedFunctions.Items[checkedFunctions.SelectedIndex]]] =
-                checkedFunctions.GetItemChecked(checkedFunctions.SelectedIndex);
+                for (int i = 0; i < checkedFunctions.Items.Count; i++)
+                {
+                    functionEnabled[functions[(string)checkedFunctions.Items[i]]] =
+              checkedFunctions.GetItemChecked(i);
+                }
             }
             catch (Exception ex) { }
+        }
+
+        private void checkedFunctions_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            functionEnabled[functions[(string)checkedFunctions.Items[e.Index]]] = e.NewValue == CheckState.Checked;
         }
     }
 }

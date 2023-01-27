@@ -57,8 +57,8 @@ namespace HitmanPatcher
             // 
             // listView1
             // 
-            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.listView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(116)))), ((int)(((byte)(179)))));
             this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -213,6 +213,7 @@ namespace HitmanPatcher
             this.checkedFunctions.Size = new System.Drawing.Size(289, 180);
             this.checkedFunctions.TabIndex = 10;
             this.checkedFunctions.Visible = false;
+            this.checkedFunctions.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedFunctions_ItemCheck);
             this.checkedFunctions.SelectedValueChanged += new System.EventHandler(this.checkedFunctions_SelectedValueChanged);
             // 
             // MainForm

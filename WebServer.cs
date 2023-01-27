@@ -192,6 +192,37 @@ namespace HitmanPatcher
                         }
                     }
 
+                    Func<string[], string, bool> addItemsByID = (string[] ids, string type) =>
+                    {
+                        JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
+                        var itemsData = new List<JToken>();
+
+                        foreach (var repoid in ids)
+                        {
+                            var item = template.DeepClone();
+                            item["Item"]["Unlockable"]["Properties"]["RepositoryId"] = repoid;
+                            item["Item"]["Unlockable"]["Guid"] = Guid.NewGuid();
+
+                            item["Item"]["Unlockable"]["Properties"]["RepositoryAssets"] = JToken.FromObject(new string[] { repoid });
+                            item["Item"]["InstanceId"] = Guid.NewGuid();
+                            item["Item"]["ProfileId"] = Guid.NewGuid();
+                            item["Item"]["Unlockable"]["Type"] = type;
+                            item["Item"]["Unlockable"]["Subtype"] = type;
+                            item["Item"]["Unlockable"]["Id"] = repoid;
+                            item["Item"]["Unlockable"]["Properties"]["Name"] = repoid;
+                            item["Item"]["Unlockable"]["Properties"]["Description"] = "自定义物品\n\nOrthrus\nMicroBlock";
+                            item["Item"]["Unlockable"]["Properties"]["Id"] = repoid;
+                            item["SlotId"] = obj["data"]["SlotId"];
+                            itemsData.Add(item);
+                        }
+
+                        obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(
+                                new JArray(obj["data"]["LoadoutItemsData"]["Items"].Concat(JToken.FromObject(itemsData)))
+                                );
+
+                        return true;
+                    };
+
                     if (!request.Url.Query.Contains("disguise") && applyFuncOrNot("items.extra-items-1"))
                     {
                         var itemsData = new List<JToken>();
@@ -205,8 +236,8 @@ namespace HitmanPatcher
                             checkout["Item"]["Unlockable"]["Properties"] = unlockable["Properties"];
                             checkout["Item"]["Unlockable"]["Id"] = unlockable["Id"];
                             checkout["Item"]["Unlockable"]["Guid"] = unlockable["Guid"];
-                            checkout["Item"]["Unlockable"]["Type"] = "ExtraType";
-                            checkout["Item"]["Unlockable"]["Subtype"] = unlockable["Subtype"];
+                            checkout["Item"]["Unlockable"]["Type"] = "ExtraItems1";
+                            checkout["Item"]["Unlockable"]["Subtype"] = "ExtraItems1";
                             checkout["SlotId"] = obj["data"]["SlotId"];
 
                             itemsData.Add(checkout);
@@ -215,7 +246,11 @@ namespace HitmanPatcher
                         obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(
                             obj["data"]["LoadoutItemsData"]["Items"].Concat(JToken.FromObject(itemsData))
                             );
+
+                        addItemsByID(JsonConvert.DeserializeObject<string[]>(GetResourceStr("extra_unlockables1_ids")), "ExtraItems1");
                     }
+
+
 
                     if (applyFuncOrNot("items.custom-repoid"))
                     {
@@ -223,36 +258,12 @@ namespace HitmanPatcher
                         string fileName = "custom-items.json";
 
                         if (!File.Exists(fileName))
-                        {
                             File.WriteAllText(fileName, "[\"1e2bc40b-505a-4cc6-a09c-94470470985b\"]");
-                        }
+
                         string json = File.ReadAllText(fileName);
-                            items = JsonConvert.DeserializeObject<string[]>(json);
+                        items = JsonConvert.DeserializeObject<string[]>(json);
 
-                            JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
-                        
-                            foreach(var repoid in items)
-                            {
-                                template["Item"]["Unlockable"]["Properties"]["RepositoryId"] = repoid;
-                                template["Item"]["Unlockable"]["Guid"] = Guid.NewGuid();
-
-                                template["Item"]["Unlockable"]["Properties"]["RepositoryAssets"] = JToken.FromObject(new string[] { repoid });
-                                template["Item"]["InstanceId"] = Guid.NewGuid();
-                                template["Item"]["ProfileId"] = Guid.NewGuid();
-                                template["Item"]["Unlockable"]["Type"] = "CUSTOM_ITEMS";
-                                template["Item"]["Unlockable"]["Subtype"] = "CUSTOM_ITEMS";
-                                template["Item"]["Unlockable"]["Id"] = repoid;
-                                template["Item"]["Unlockable"]["Properties"]["Name"] = repoid;
-                                template["Item"]["Unlockable"]["Properties"]["Description"] = "自定义物品\n\nOrthrus\nMicroBlock";
-                                template["Item"]["Unlockable"]["Properties"]["Id"] = repoid;
-                                template["SlotId"] = obj["data"]["SlotId"];
-
-                                obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(
-                                    obj["data"]["LoadoutItemsData"]["Items"].Prepend(template)
-                                    );
-                            }
-
-                        
+                        addItemsByID(items, "CustomUnlockables");
                     }
 
                     if (!request.Url.Query.Contains("disguise") && applyFuncOrNot("items.all-items"))
