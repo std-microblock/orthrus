@@ -25,7 +25,8 @@ namespace HitmanPatcher
             {"[入口] 解锁所有入口","entrance.unlock-all" },
             {"[计划] 解除计划限制（西装等）","planning.remove-limits" },
             {"[计划] 解锁全部物品藏匿点","agency-pickups.unlock-all" },
-            {"[物品] 添加地图内的伪装到西装", "items.add-map-disguises"}
+            {"[物品] 添加地图内的伪装到西装", "items.add-map-disguises"},
+            {"[物品] 额外物品包 1","items.extra-items-1" }
         };
 
         public static readonly Dictionary<string, bool> functionEnabled = new Dictionary<string, bool>
@@ -38,7 +39,8 @@ namespace HitmanPatcher
             {"entrance.unlock-all", true},
             {"planning.remove-limits", true},
             {"agency-pickups.unlock-all",true },
-            {"items.add-map-disguises",true }
+            {"items.add-map-disguises",true },
+            {"items.extra-items-1",false }
         };
 
         private static readonly Dictionary<string, string> publicServers = new Dictionary<string, string>

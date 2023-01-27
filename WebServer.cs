@@ -191,6 +191,31 @@ namespace HitmanPatcher
                         }
                     }
 
+                    if (!request.Url.Query.Contains("disguise") && applyFuncOrNot("items.extra-items-1"))
+                    {
+                        var itemsData = new List<JToken>();
+                        var unlockables = JsonConvert.DeserializeObject<List<JObject>>(GetResourceStr("extra_unlockables1"));
+                        JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
+                        foreach (var unlockable in unlockables)
+                        {
+                            JToken checkout = template.DeepClone();
+                            checkout["Item"]["InstanceId"] = Guid.NewGuid();
+                            checkout["Item"]["ProfileId"] = Guid.NewGuid();
+                            checkout["Item"]["Unlockable"]["Properties"] = unlockable["Properties"];
+                            checkout["Item"]["Unlockable"]["Id"] = unlockable["Id"];
+                            checkout["Item"]["Unlockable"]["Guid"] = unlockable["Guid"];
+                            checkout["Item"]["Unlockable"]["Type"] = "ExtraType";
+                            checkout["Item"]["Unlockable"]["Subtype"] = unlockable["Subtype"];
+                            checkout["SlotId"] = obj["data"]["SlotId"];
+
+                            itemsData.Add(checkout);
+                        }
+
+                        obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(
+                            obj["data"]["LoadoutItemsData"]["Items"].Concat(JToken.FromObject(itemsData))
+                            );
+                    }
+
                     if (!request.Url.Query.Contains("disguise") && applyFuncOrNot("items.all-items"))
                     {
                         var ids = new List<JToken>();

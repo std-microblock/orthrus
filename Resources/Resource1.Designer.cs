@@ -73,6 +73,16 @@ namespace HitmanPatcher.Resources {
         /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
+        internal static byte[] extra_unlockables1 {
+            get {
+                object obj = ResourceManager.GetObject("extra_unlockables1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
         internal static byte[] loadoutUnlockableTemplate_json {
             get {
                 object obj = ResourceManager.GetObject("loadoutUnlockableTemplate.json", resourceCulture);
