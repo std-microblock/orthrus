@@ -72,7 +72,7 @@ namespace HitmanPatcher
             this.listView1.Location = new System.Drawing.Point(10, 70);
             this.listView1.Margin = new System.Windows.Forms.Padding(2);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(354, 203);
+            this.listView1.Size = new System.Drawing.Size(364, 203);
             this.listView1.TabIndex = 2;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -181,7 +181,7 @@ namespace HitmanPatcher
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(314, 15);
+            this.pictureBox1.Location = new System.Drawing.Point(324, 15);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(50, 50);
             this.pictureBox1.TabIndex = 8;
@@ -193,7 +193,7 @@ namespace HitmanPatcher
             this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
-            this.pictureBox2.Location = new System.Drawing.Point(258, 15);
+            this.pictureBox2.Location = new System.Drawing.Point(268, 15);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(50, 50);
             this.pictureBox2.TabIndex = 9;
@@ -208,7 +208,7 @@ namespace HitmanPatcher
             this.checkedFunctions.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.checkedFunctions.ForeColor = System.Drawing.Color.White;
             this.checkedFunctions.FormattingEnabled = true;
-            this.checkedFunctions.Location = new System.Drawing.Point(75, 71);
+            this.checkedFunctions.Location = new System.Drawing.Point(85, 71);
             this.checkedFunctions.Name = "checkedFunctions";
             this.checkedFunctions.Size = new System.Drawing.Size(289, 180);
             this.checkedFunctions.TabIndex = 10;
@@ -220,7 +220,7 @@ namespace HitmanPatcher
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(116)))), ((int)(((byte)(179)))));
-            this.ClientSize = new System.Drawing.Size(376, 284);
+            this.ClientSize = new System.Drawing.Size(386, 284);
             this.Controls.Add(this.checkedFunctions);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
