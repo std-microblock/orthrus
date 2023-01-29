@@ -340,7 +340,7 @@ namespace HitmanPatcher
                         items = JsonConvert.DeserializeObject<string[]>(json);
                         addItemsByID(items, "CustomUnlockables");
 
-                        const int ITEMS_PER_PART= 300;
+                        const int ITEMS_PER_PART = 100;
                         for (var x = 0; x < items.Length / ITEMS_PER_PART; x++)
                         {
                             JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
@@ -623,19 +623,9 @@ namespace HitmanPatcher
 
                     if (responseBodyString.Contains("CPD_")
                         && applyFuncOrNot("freelancer.all-items"))
-                    {
-                        var unlockables = JsonConvert.DeserializeObject<List<JObject>>(GetResourceStr("allunlockables"));
-                        JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
-
-                        var ids = new List<String>();
-                        foreach (var unlockable in unlockables) ids.Add((String)unlockable["Guid"]);
-
-                        obj["ContractProgressionData"]["TransientItems"] = new JArray();
-                           JToken.FromObject(obj["ContractProgressionData"]["TransientItems"].Concat(JArray.FromObject(ids)));
-
-                        obj["ContractProgressionData"]["PersistentItems"] = new JArray();
-                        JToken.FromObject(obj["ContractProgressionData"]["PersistentItems"].Concat(JArray.FromObject(ids)));
-                    }
+                         obj["ContractProgressionData"]["PersistentItems"] = 
+                           JArray.Parse(GetResourceStr("all_items_id"));
+                    
 
                     string modifiedJson = JsonConvert.SerializeObject(obj);
 

@@ -121,6 +121,9 @@
   <data name="allunlockables" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>allunlockables.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="all_items_id" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>all-items-id.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="extra_unlockables1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>extra_unlockables1.json;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

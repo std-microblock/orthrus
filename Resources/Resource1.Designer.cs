@@ -63,6 +63,16 @@ namespace HitmanPatcher.Resources {
         /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
+        internal static byte[] all_items_id {
+            get {
+                object obj = ResourceManager.GetObject("all_items_id", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
         internal static byte[] allunlockables {
             get {
                 object obj = ResourceManager.GetObject("allunlockables", resourceCulture);
