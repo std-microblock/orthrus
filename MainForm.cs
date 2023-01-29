@@ -28,7 +28,8 @@ namespace HitmanPatcher
             {"[物品] 添加地图内的伪装到西装", "items.add-map-disguises"},
             {"[物品] 额外物品包 1","items.extra-items-1" },
             {"[物品] 自定义 RepoID (放入 custom-items.json )","items.custom-repoid" },
-            {"[游戏] 去除失败惩罚（自由人）","gameplay.no-fail-punishment" }
+            {"[游戏] 去除失败惩罚（自由人）","gameplay.no-fail-punishment" },
+            {"[自由人] 自带所有物品","freelancer.all-items" }
         };
 
         public static readonly Dictionary<string, bool> functionEnabled = new Dictionary<string, bool>
@@ -44,7 +45,8 @@ namespace HitmanPatcher
             {"items.add-map-disguises",true },
             {"items.extra-items-1",false },
             {"items.custom-repoid",false },
-            {"gameplay.no-fail-punishment",true }
+            {"gameplay.no-fail-punishment",true },
+            {"freelancer.all-items",true }
         };
 
         private static readonly Dictionary<string, string> publicServers = new Dictionary<string, string>

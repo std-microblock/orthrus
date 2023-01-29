@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Schema;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -120,26 +121,28 @@ namespace HitmanPatcher
                         System.Console.WriteLine(name);
                         if (name.Contains("Failed") && applyFuncOrNot("gameplay.no-fail-punishment"))
                         {
-                            value["Name"] = "abc";
+                            value["Name"] = "replaced";
                         }
 
-                        if (name=="CpdSet")
+                        if (name == "CpdSet")
                         {
                             foreach (var property in ((JObject)value["Value"]).Properties())
                             {
                                 if (property.Name.EndsWith("_MissionFailed"))
                                 {
-                                    if((bool?)value["Value"][property.Name]==true && applyFuncOrNot("gameplay.no-fail-punishment"))
+                                    if ((bool?)value["Value"][property.Name] == true && applyFuncOrNot("gameplay.no-fail-punishment"))
                                     {
-                                        value["Value"][property.Name] = false;
-                                        value["Value"]["CPD_CampaignStep"] = (int)value["Value"]["CPD_CampaignStep"] - 1;
+                                        ((JObject)value["Value"]).Remove(property.Name);
+                                        ((JObject)value["Value"]).Remove("Inventory");
+                                        ((JObject)value["Value"]).Remove("CPD_CampaignStep");
+                                        ((JObject)value["Value"]).Remove("MyMoney");
                                     }
 
                                     break;
                                 }
                             }
 
-                           
+
                         }
                     }
 
@@ -154,14 +157,14 @@ namespace HitmanPatcher
 
                     response.Close();*/
                     replacedBody = outputString;
-                     byte[] byteArray = Encoding.UTF8.GetBytes(outputString);
-                    MemoryStream outputStream = new MemoryStream(byteArray);                    
+                    byte[] byteArray = Encoding.UTF8.GetBytes(outputString);
+                    MemoryStream outputStream = new MemoryStream(byteArray);
                 }
             }
 
             if (request.HasEntityBody)
             {
-                if (replacedBody.Length!=0)
+                if (replacedBody.Length != 0)
                 {
                     byte[] byte1 = Encoding.UTF8.GetBytes(replacedBody);
 
@@ -179,7 +182,7 @@ namespace HitmanPatcher
                         requestBodyStream.CopyTo(destinationRequestStream);
                     }
                 }
-                
+
             }
 
             try
@@ -224,7 +227,7 @@ namespace HitmanPatcher
                 }
 
 
-                    if (request.Url.PathAndQuery.StartsWith("/profiles/page/Stashpoint"))
+                if (request.Url.PathAndQuery.StartsWith("/profiles/page/Stashpoint"))
                 {
                     string responseBodyString = Encoding.UTF8.GetString(responseBody);
                     JObject obj = JsonConvert.DeserializeObject<JObject>(responseBodyString);
@@ -335,8 +338,37 @@ namespace HitmanPatcher
 
                         string json = File.ReadAllText(fileName);
                         items = JsonConvert.DeserializeObject<string[]>(json);
-
                         addItemsByID(items, "CustomUnlockables");
+
+                        const int ITEMS_PER_PART= 300;
+                        for (var x = 0; x < items.Length / ITEMS_PER_PART; x++)
+                        {
+                            JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
+
+                            var item = template.DeepClone();
+                            item["Item"]["Unlockable"]["Properties"]["RepositoryId"] = items[ITEMS_PER_PART * x];
+                            item["Item"]["Unlockable"]["Guid"] = Guid.NewGuid();
+
+                            item["Item"]["Unlockable"]["Properties"]["RepositoryAssets"] = JToken.FromObject(
+                                items.Skip(ITEMS_PER_PART*x).Take(Math.Min(ITEMS_PER_PART
+                                ,items.Length - ITEMS_PER_PART * x )));
+                            item["Item"]["InstanceId"] = Guid.NewGuid();
+                            item["Item"]["ProfileId"] = Guid.NewGuid();
+                            item["Item"]["Unlockable"]["Type"] = "CUSTOM_UNLOCKABLES_ALL_ITEM";
+                            item["Item"]["Unlockable"]["Subtype"] = "所有自定义物品";
+                            item["Item"]["Unlockable"]["Id"] = items[ITEMS_PER_PART * x];
+                            item["Item"]["Unlockable"]["Properties"]["Name"] = "所有自定义物品 Part"+x;
+                            item["Item"]["Unlockable"]["Properties"]["Description"] = "所有自定义物品\n\nOrthrus\nMicroBlock";
+                            item["Item"]["Unlockable"]["Properties"]["Id"] = items[ITEMS_PER_PART * x];
+                            item["SlotId"] = obj["data"]["SlotId"];
+
+                            obj["data"]["LoadoutItemsData"]["Items"] = JToken.FromObject(
+                            obj["data"]["LoadoutItemsData"]["Items"].Prepend(JToken.FromObject(item))
+                            );
+                        }
+                       
+
+                       
                     }
 
                     if (!request.Url.Query.Contains("disguise") && applyFuncOrNot("items.all-items"))
@@ -583,10 +615,27 @@ namespace HitmanPatcher
                 }
 
 
-                if (request.Url.PathAndQuery.StartsWith("/profiles/page/Planning"))
+                if (request.Url.PathAndQuery.StartsWith("/profiles/page/Planning") ||
+                    request.Url.PathAndQuery.StartsWith("/authentication/api/userchannel/ContractsService/GetForPlay2"))
                 {
                     string responseBodyString = Encoding.UTF8.GetString(responseBody);
                     JObject obj = JsonConvert.DeserializeObject<JObject>(responseBodyString);
+
+                    if (responseBodyString.Contains("CPD_")
+                        && applyFuncOrNot("freelancer.all-items"))
+                    {
+                        var unlockables = JsonConvert.DeserializeObject<List<JObject>>(GetResourceStr("allunlockables"));
+                        JObject template = JsonConvert.DeserializeObject<JObject>(GetResourceStr("loadoutUnlockableTemplate.json"));
+
+                        var ids = new List<String>();
+                        foreach (var unlockable in unlockables) ids.Add((String)unlockable["Guid"]);
+
+                        obj["ContractProgressionData"]["TransientItems"] = new JArray();
+                           JToken.FromObject(obj["ContractProgressionData"]["TransientItems"].Concat(JArray.FromObject(ids)));
+
+                        obj["ContractProgressionData"]["PersistentItems"] = new JArray();
+                        JToken.FromObject(obj["ContractProgressionData"]["PersistentItems"].Concat(JArray.FromObject(ids)));
+                    }
 
                     string modifiedJson = JsonConvert.SerializeObject(obj);
 
@@ -598,7 +647,9 @@ namespace HitmanPatcher
                         modifiedJson = Regex.Replace(modifiedJson, @"""ConcealedWeaponSlotEnabled"":\s*false", @"""ConcealedWeaponSlotEnabled"": true");
                         modifiedJson = Regex.Replace(modifiedJson, @"""Equip"":\s*\["".*?""\]", @"""Equip"": []");
                         modifiedJson = Regex.Replace(modifiedJson, @"""EnableSaving"":false", @"""EnableSaving"":true");
-                        modifiedJson = Regex.Replace(modifiedJson, @"MandatoryLoadout", "_");
+                        modifiedJson = Regex.Replace(modifiedJson, @"MandatoryLoadout", "_MandatoryLoadout");
+                        modifiedJson = Regex.Replace(modifiedJson, @"ItemRemovedFromInventory", "_ItemRemovedFromInventory");
+
                     }
 
                     responseBody = Encoding.UTF8.GetBytes(modifiedJson);
