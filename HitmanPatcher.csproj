@@ -411,6 +411,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="patcher.ico" />
+    <None Include="Resources\all-items-id.json" />
     <None Include="Resources\allunlockables.json" />
     <None Include="Resources\extra_unlockables1.json" />
     <None Include="Resources\extra_unlockables_ids2.json" />

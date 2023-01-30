@@ -17,7 +17,9 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace HitmanPatcher
 {
@@ -132,10 +134,7 @@ namespace HitmanPatcher
                                 {
                                     if ((bool?)value["Value"][property.Name] == true && applyFuncOrNot("gameplay.no-fail-punishment"))
                                     {
-                                        ((JObject)value["Value"]).Remove(property.Name);
-                                        ((JObject)value["Value"]).Remove("Inventory");
-                                        ((JObject)value["Value"]).Remove("CPD_CampaignStep");
-                                        ((JObject)value["Value"]).Remove("MyMoney");
+                                        value["Value"][property.Name] = false;
                                     }
 
                                     break;
@@ -350,14 +349,14 @@ namespace HitmanPatcher
                             item["Item"]["Unlockable"]["Guid"] = Guid.NewGuid();
 
                             item["Item"]["Unlockable"]["Properties"]["RepositoryAssets"] = JToken.FromObject(
-                                items.Skip(ITEMS_PER_PART*x).Take(Math.Min(ITEMS_PER_PART
-                                ,items.Length - ITEMS_PER_PART * x )));
+                                items.Skip(ITEMS_PER_PART * x).Take(Math.Min(ITEMS_PER_PART
+                                , items.Length - ITEMS_PER_PART * x)));
                             item["Item"]["InstanceId"] = Guid.NewGuid();
                             item["Item"]["ProfileId"] = Guid.NewGuid();
                             item["Item"]["Unlockable"]["Type"] = "CUSTOM_UNLOCKABLES_ALL_ITEM";
                             item["Item"]["Unlockable"]["Subtype"] = "所有自定义物品";
                             item["Item"]["Unlockable"]["Id"] = items[ITEMS_PER_PART * x];
-                            item["Item"]["Unlockable"]["Properties"]["Name"] = "所有自定义物品 Part"+x;
+                            item["Item"]["Unlockable"]["Properties"]["Name"] = "所有自定义物品 Part" + x;
                             item["Item"]["Unlockable"]["Properties"]["Description"] = "所有自定义物品\n\nOrthrus\nMicroBlock";
                             item["Item"]["Unlockable"]["Properties"]["Id"] = items[ITEMS_PER_PART * x];
                             item["SlotId"] = obj["data"]["SlotId"];
@@ -366,9 +365,9 @@ namespace HitmanPatcher
                             obj["data"]["LoadoutItemsData"]["Items"].Prepend(JToken.FromObject(item))
                             );
                         }
-                       
 
-                       
+
+
                     }
 
                     if (!request.Url.Query.Contains("disguise") && applyFuncOrNot("items.all-items"))
@@ -623,9 +622,9 @@ namespace HitmanPatcher
 
                     if (responseBodyString.Contains("CPD_")
                         && applyFuncOrNot("freelancer.all-items"))
-                         obj["ContractProgressionData"]["PersistentItems"] = 
-                           JArray.Parse(GetResourceStr("all_items_id"));
-                    
+                        obj["ContractProgressionData"]["PersistentItems"] =
+                          JArray.Parse(GetResourceStr("all_items_id"));
+
 
                     string modifiedJson = JsonConvert.SerializeObject(obj);
 
