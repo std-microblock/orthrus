@@ -20,10 +20,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup NuGet
-        uses: nuget/setup-nuget@v2
+        uses: nuget/setup-nuget@v4
 
       - name: Restore packages
         shell: pwsh
@@ -62,7 +62,7 @@ jobs:
           (Get-Item $exe).VersionInfo | Format-List FileVersion, ProductVersion
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Orthrus
           path: bin/x64/Release/Orthrus.exe
@@ -77,7 +77,7 @@ jobs:
       contents: write
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: Orthrus
           path: dist
