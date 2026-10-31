@@ -1,0 +1,100 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build (Release x64)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+
+      - name: Restore packages
+        shell: pwsh
+        run: nuget restore Orthrus.sln -PackagesDirectory packages -NonInteractive
+
+      - name: Build
+        shell: pwsh
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+          if (-not (Test-Path $vswhere)) { throw 'vswhere.exe not found, no Visual Studio installation on this runner' }
+          $msbuild = & $vswhere -latest -products * -requires Microsoft.Component.MSBuild -find 'MSBuild\**\Bin\MSBuild.exe' |
+            Select-Object -First 1
+          if (-not $msbuild) { throw 'MSBuild not found' }
+          Write-Host "MSBuild: $msbuild"
+
+          & $msbuild Orthrus.sln /p:Configuration=Release /p:Platform=x64 /nologo /v:m
+          if ($LASTEXITCODE -ne 0) { throw "MSBuild failed with exit code $LASTEXITCODE" }
+
+      - name: Check single-file output
+        shell: pwsh
+        run: |
+          $exe = 'bin/x64/Release/Orthrus.exe'
+          if (-not (Test-Path $exe)) { throw "Build output $exe not found" }
+
+          # Costura.Fody embeds every managed dependency into the exe, so the
+          # released file must be a single self-contained executable.
+          $dlls = Get-ChildItem 'bin/x64/Release' -Filter *.dll -File
+          if ($dlls) {
+            throw "Dependencies were not embedded: $($dlls.Name -join ', ')"
+          }
+
+          $size = (Get-Item $exe).Length
+          Write-Host ("Orthrus.exe: {0} bytes" -f $size)
+          if ($size -lt 1MB) { throw "Orthrus.exe looks too small ($size bytes), embedded assemblies are probably missing" }
+
+          (Get-Item $exe).VersionInfo | Format-List FileVersion, ProductVersion
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Orthrus
+          path: bin/x64/Release/Orthrus.exe
+          if-no-files-found: error
+
+  release:
+    name: Publish release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Orthrus
+          path: dist
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd dist
+          ls -l
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists, refreshing its asset"
+            gh release upload "$GITHUB_REF_NAME" Orthrus.exe --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" Orthrus.exe \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$GITHUB_REF_NAME" \
+              --generate-notes
+          fi

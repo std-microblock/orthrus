@@ -2,6 +2,11 @@
 
 <div align=center><a align=center href=https://github.com/Evo-c/orthrus-eng>English Version</a></div>
 
+<div align=center>
+<a href=https://github.com/std-microblock/orthrus/releases/latest><img src=https://img.shields.io/github/v/release/std-microblock/orthrus?label=%E4%B8%8B%E8%BD%BD%E6%9C%80%E6%96%B0%E7%89%88 /></a>
+<a href=https://github.com/std-microblock/orthrus/actions/workflows/build.yml><img src=https://github.com/std-microblock/orthrus/actions/workflows/build.yml/badge.svg /></a>
+</div>
+
 功能列表：
 ```
 [物品] 解锁所有物品
